@@ -1,13 +1,30 @@
 ---
+
+/**
+ * About usage of slugs.
+ * [...slug].astro and [slug].astro are both dynamic route files in Astro, but they handle URL segments differently based on the number of path segments they match. 
+
+[slug].astro matches a single path segment.  For example, src/pages/[slug].astro will handle requests for /about or /contact, but it will not match /about/team or /posts/my-post. 
+[...slug].astro (using the spread operator ...) matches multiple path segments, including those with slashes.  For example, src/pages/[...slug].astro will handle /about, /about/team, and /posts/my-post. This is essential for creating hierarchical URLs like /blog/2023/10/my-post or for catching arbitrary nested routes. 
+ */
 import { type CollectionEntry, getCollection, render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
+import fetchApi from '../../lib/strapi';
+import type Article from '../../interfaces/article';
+import { Debug } from 'astro/components';
 
 export async function getStaticPaths() {
+
 	const posts = await getCollection('blog');
+	console.log("posts test", posts)
 	return posts.map((post) => ({
 		params: { slug: post.id },
 		props: post,
 	}));
+	// const posts = await fetchApi<Article[]>({
+  	// 	endpoint: 'posts?populate=media',
+  	// 	wrappedByKey: 'data',
+	// });
 }
 type Props = CollectionEntry<'blog'>;
 
