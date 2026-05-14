@@ -3,3 +3,4 @@
 
 export const SITE_TITLE = 'Astro Blog';
 export const SITE_DESCRIPTION = 'Welcome to my website!';
+export const SERVER_URL = import.meta.env.STRAPI_URL;
