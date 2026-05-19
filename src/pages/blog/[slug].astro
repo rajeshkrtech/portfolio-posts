@@ -1,0 +1,35 @@
+---
+import BlogPost from '../../layouts/BlogPost.astro';
+import fetchApi from '../../lib/strapi';
+import type Article from '../../interfaces/article';
+import { SERVER_URL } from '../../consts';
+
+export async function getStaticPaths() {
+  const posts = await fetchApi<Article[]>({
+    endpoint: 'posts?populate=media',
+    wrappedByKey: 'data',
+  });
+
+  return posts.map((post) => ({
+    params: { slug: post.attributes.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { title, description, publishedAt, media, content } = post.attributes;
+
+const heroImage = media?.data
+  ? SERVER_URL + media.data.attributes.url
+  : undefined;
+---
+
+<BlogPost
+  title={title}
+  description={description}
+  pubDate={new Date(publishedAt)}
+  heroImage={heroImage}
+>
+  <!-- Render rich text / markdown content from Strapi -->
+  <Fragment set:html={content} />
+</BlogPost>
