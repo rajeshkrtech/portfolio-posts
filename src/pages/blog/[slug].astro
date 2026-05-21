@@ -1,8 +1,9 @@
 ---
+import { Markdown } from "astro-remote";
+import { SERVER_URL } from '../../consts';
 import BlogPost from '../../layouts/BlogPost.astro';
 import fetchApi from '../../lib/strapi';
 import type Article from '../../interfaces/article';
-import { SERVER_URL } from '../../consts';
 
 export async function getStaticPaths() {
   const posts = await fetchApi<Article[]>({
@@ -10,10 +11,12 @@ export async function getStaticPaths() {
     wrappedByKey: 'data',
   });
 
-  return posts.map((post) => ({
+  const staticPaths = posts.map((post) => ({
     params: { slug: post.attributes.slug },
     props: { post },
   }));
+
+  return staticPaths;
 }
 
 const { post } = Astro.props;
@@ -31,5 +34,5 @@ const heroImage = media?.data
   heroImage={heroImage}
 >
   <!-- Render rich text / markdown content from Strapi -->
-  <Fragment set:html={content} />
+  <Markdown { content } />
 </BlogPost>
