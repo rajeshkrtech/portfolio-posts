@@ -1,5 +1,5 @@
 ---
-import fetchApi from '../../lib/strapi';
+import request from '../../lib/strapi';
 import type Article from '../../interfaces/article';
 
 const { slug } = Astro.params;
@@ -7,7 +7,7 @@ const { slug } = Astro.params;
 let article: Article;
 
 try {
-  article = await fetchApi<Article>({
+  article = await request<Article>({
     endpoint: 'articles',
     wrappedByKey: 'data',
     wrappedByList: true,

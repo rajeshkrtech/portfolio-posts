@@ -1,5 +1,5 @@
 ---
-import fetchApi from '../lib/strapi';
+import request from '../lib/strapi';
 import type Article from '../interfaces/article';
 import { SITE_DESCRIPTION, SITE_TITLE, SERVER_URL } from '../consts';
 import FormattedDate from '../components/FormattedDate.astro';
@@ -9,7 +9,7 @@ import Footer from '../components/Footer.astro';
 import { Image } from 'astro:assets';
 import { Debug } from 'astro/components';
 
-const posts = await fetchApi<Article[]>({
+const posts = await request<Article[]>({
   endpoint: 'posts?populate=media',
   wrappedByKey: 'data',
 });
@@ -90,7 +90,7 @@ const posts = await fetchApi<Article[]>({
 		</style>
 	</head>
 	<body>
-		<!-- <Header /> -->
+		<Header />
 		<main>
 			<section>
 				<ul>
@@ -112,6 +112,6 @@ const posts = await fetchApi<Article[]>({
 				</ul>
 			</section>
 		</main>
-		<!-- <Footer /> -->
+		<Footer />
 	</body>
 </html>
