@@ -1,45 +1,38 @@
 ---
+import { Markdown } from "astro-remote";
+import { SERVER_URL } from '../../consts';
+import BlogPost from '../../layouts/BlogPost.astro';
 import fetchApi from '../../lib/strapi';
 import type Article from '../../interfaces/article';
 
-const { slug } = Astro.params;
-
-let article: Article;
-
-try {
-  article = await fetchApi<Article>({
-    endpoint: 'articles',
+export async function getStaticPaths() {
+  const posts = await fetchApi<Article[]>({
+    endpoint: 'posts?populate=media',
     wrappedByKey: 'data',
-    wrappedByList: true,
-    query: {
-      'filters[slug][$eq]': slug || '',
-    },
   });
-} catch (error) {
-  return Astro.redirect('/404');
+
+  const staticPaths = posts.map((post) => ({
+    params: { slug: post.attributes.slug },
+    props: { post },
+  }));
+
+  return staticPaths;
 }
+
+const { post } = Astro.props;
+const { title, description, publishedAt, media, content } = post.attributes;
+
+const heroImage = media?.data
+  ? SERVER_URL + media.data.attributes.url
+  : undefined;
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>{article.title}</title>
-  </head>
-
-  <body>
-    <main>
-      <img src={import.meta.env.STRAPI_URL + article.image.data.url} />
-
-      <h1>{article.title}</h1>
-
-      <!-- Render plain text -->
-      <p>{article.content}</p>
-      <!-- Render markdown -->
-      <!-- <MyMarkdownComponent>
-        {article.content}
-      </MyMarkdownComponent> -->
-      <!-- Render html -->
-      <Fragment set:html={article.content} />
-    </main>
-  </body>
-</html>
+<BlogPost
+  title={title}
+  description={description}
+  pubDate={new Date(publishedAt)}
+  heroImage={heroImage}
+>
+  <!-- Render rich text / markdown content from Strapi -->
+  <Markdown { content } />
+</BlogPost>
