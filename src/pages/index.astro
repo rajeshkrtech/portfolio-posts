@@ -3,7 +3,8 @@ import request from '../lib/strapi';
 import type Article from '../interfaces/article';
 import { SITE_DESCRIPTION, SITE_TITLE, SERVER_URL } from '../consts';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+// import Header from '../components/Header.astro';
+import HeaderMain from '../components/HeaderMain.jsx';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import { Image } from 'astro:assets';
@@ -13,8 +14,35 @@ const posts = await request<Article[]>({
   endpoint: 'posts?populate=media',
   wrappedByKey: 'data',
 });
+
+const homeData = await request<Article[]>({
+  endpoint: 'home',
+  wrappedByKey: 'data',
+});
+
+const headerData = await request<Article[]>({
+  endpoint: 'header',
+  wrappedByKey: 'data',
+});
+
+const footerData = await request<Article[]>({
+  endpoint: 'footer',
+  wrappedByKey: 'data',
+});
+
+const socialData = await request<Article[]>({
+  endpoint: 'social',
+  wrappedByKey: 'data',
+});
+
+const headerProps = { 
+	home: homeData.attributes, 
+	header: headerData.attributes, 
+	footer: footerData.attributes,  
+	social: socialData.attributes,  
+};
 ---
-<!-- <Debug {posts} /> -->
+<!-- <Debug { headerProps } /> -->
 <!doctype html>
 <html lang="en">
 	<head>
@@ -90,7 +118,7 @@ const posts = await request<Article[]>({
 		</style>
 	</head>
 	<body>
-		<!-- <Header /> -->
+		<HeaderMain data={ headerProps } />
 		<main>
 			<section>
 				<ul>
@@ -112,6 +140,6 @@ const posts = await request<Article[]>({
 				</ul>
 			</section>
 		</main>
-		<!-- <Footer /> -->
+		<Footer />
 	</body>
 </html>
