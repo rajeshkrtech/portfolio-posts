@@ -15,11 +15,6 @@ const posts = await request<Article[]>({
   wrappedByKey: 'data',
 });
 
-const homeData = await request<Article[]>({
-  endpoint: 'home',
-  wrappedByKey: 'data',
-});
-
 const headerData = await request<Article[]>({
   endpoint: 'header',
   wrappedByKey: 'data',
@@ -36,10 +31,13 @@ const socialData = await request<Article[]>({
 });
 
 const headerProps = { 
-	home: homeData.attributes, 
-	header: headerData.attributes, 
+	header: headerData.attributes
+};
+
+
+const footerProps = { 
 	footer: footerData.attributes,  
-	social: socialData.attributes,  
+	social: socialData.attributes
 };
 ---
 <!-- <Debug { headerProps } /> -->
@@ -140,6 +138,6 @@ const headerProps = {
 				</ul>
 			</section>
 		</main>
-		<Footer />
+		<Footer data={ footerProps } />
 	</body>
 </html>

@@ -4,6 +4,11 @@
   License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
  */
 
+
+/* Tailwind styles */
+@import "tailwindcss";
+
+
 :root {
 	--accent: #2337ff;
 	--accent-dark: #000d8a;
@@ -64,12 +69,12 @@ strong,
 b {
 	font-weight: 700;
 }
-a {
+/* a {
 	color: var(--accent);
 }
 a:hover {
 	color: var(--accent);
-}
+} */
 p {
 	margin-bottom: 1em;
 }
