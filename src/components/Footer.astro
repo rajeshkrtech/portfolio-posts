@@ -1,10 +1,27 @@
 ---
 const today = new Date();
 const { data } = Astro.props;
-import { Debug } from 'astro/components';
+import request from '../lib/strapi';
+import type Article from '../interfaces/article';
+
+const footerData = await request<Article[]>({
+  endpoint: 'footer',
+  wrappedByKey: 'data',
+});
+
+const socialData = await request<Article[]>({
+  endpoint: 'social',
+  wrappedByKey: 'data',
+});
+
+const footerProps = { 
+	footer: footerData.attributes,  
+	social: socialData.attributes
+};
+
 ---
 
-<footer>{ data.footer.copyright }
+<footer>{ footerProps.footer.copyright }
 </footer>
 <style>
 	footer {
