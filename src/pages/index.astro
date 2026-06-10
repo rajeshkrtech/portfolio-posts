@@ -105,7 +105,7 @@ Astro.response.headers.set(
 							<li>
 								<a href={`/blog/${post.attributes.slug}/`}>
 									{post.attributes.media && post.attributes.media.data && (
-										<Image width={720} height={360} src={SERVER_URL + post.attributes.media.data.attributes.url} alt={post.attributes.media.data.attributes.alternativeText} />
+										<Image width={720} height={360} src={SERVER_URL + post.attributes.media.data.attributes.url} alt={post.attributes.media.data.attributes.alternativeText || ""} />
 									)}
 									<h4 class="title" >{post.attributes.title}</h4>
 									<p class="date">
