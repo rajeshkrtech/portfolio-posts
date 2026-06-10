@@ -5,9 +5,12 @@ import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from "@tailwindcss/vite";
+import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
+	output: 'server', // To get fresh content from server on each request despite of building SSR page
+  	adapter: vercel(),
 	site: 'https://rajeshkr.com',
 	base: '/',
 	integrations: [mdx(), sitemap(), react()],

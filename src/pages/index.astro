@@ -13,12 +13,6 @@ const posts = await request<Article[]>({
   wrappedByKey: 'data',
 });
 
-// Add now cache for displaying most recent data from CDN server
-Astro.response.headers.set(
-  'Cache-Control', 
-  'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
-);
-
 ---
 
 <!doctype html>
