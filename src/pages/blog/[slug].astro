@@ -12,27 +12,39 @@ export async function getStaticPaths() {
   });
 
   const staticPaths = posts.map((post) => ({
-    params: { slug: post.attributes.slug },
-    props: { post },
+    params: { slug: post.attributes?.slug ?? String(post.id) },
+    props: { post }
   }));
 
   return staticPaths;
 }
 
-const { post } = Astro.props;
-const { title, description, publishedAt, media, content } = post.attributes;
+const slug = Astro.params.slug;
+let post = Astro.props?.post;
 
-const heroImage = media?.data
-  ? SERVER_URL + media.data.attributes.url
-  : undefined;
+if (!post) {
+  // Try fetching by slug
+  post = await fetchApi<any>({
+    endpoint: `posts?filters[slug]=${slug}&populate=media`,
+    wrappedByKey: 'data',
+    wrappedByList: true,
+  }).catch(() => null);
+
+  // If not found and slug looks like an id, try fetching by id
+  if (!post && /^\d+$/.test(slug)) {
+    const res = await fetchApi<any>({ endpoint: `posts/${slug}?populate=media` }).catch(() => null);
+    post = res?.data ?? res;
+  }
+}
+
+if (!post) {
+  throw new Error(`Post not found: ${slug}`);
+}
+
+const { title, description, publishedAt, media, content, updatedAt } = post.attributes || {};
+const heroImage = media?.data?.attributes ? SERVER_URL + media.data.attributes.url : undefined;
 ---
 
-<BlogPost
-  title={title}
-  description={description}
-  pubDate={new Date(publishedAt)}
-  heroImage={heroImage}
->
-  <!-- Render rich text / markdown content from Strapi -->
-  <Markdown { content } />
+<BlogPost title={title} description={description} pubDate={new Date(publishedAt)} heroImage={heroImage}>
+  <Markdown content={content} />
 </BlogPost>

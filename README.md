@@ -1,63 +1,61 @@
-# Astro Starter Kit: Blog
+# portfolio-posts (Astro)
 
-```sh
-bun create astro@latest -- --template blog
-```
+This is a personal portfolio/blog site built with Astro. It sources blog posts from two places:
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- Local content (src/content/blog) for authored Markdown/MDX posts
+- A Strapi CMS via the STRAPI_URL environment variable for external posts
 
-Features:
+Changes made:
+- Blog index links now use post slugs instead of numeric IDs.
+- Blog page (src/pages/blog/[slug].astro) will gracefully handle missing Astro.props.post by attempting to fetch the post by slug or by ID.
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+## Requirements
+- Node >= 22.12.0
+- npm (or pnpm/yarn)
 
-## 🚀 Project Structure
+## Setup
+1. Install dependencies:
 
-Inside of your Astro project, you'll see the following folders and files:
+   npm install
 
-```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
-```
+2. Create a .env file in the project root with at least the STRAPI_URL value (only required if using Strapi):
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+   STRAPI_URL="https://your-strapi.example.com"
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+   (When running in production, set the environment variable in your hosting platform.)
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+3. Run the dev server:
 
-Any static assets, like images, can be placed in the `public/` directory.
+   npm run dev
 
-## 🧞 Commands
+4. Build for production:
 
-All commands are run from the root of the project, from a terminal:
+   npm run build
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `bun install`             | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
+5. Preview the production build locally:
 
-## 👀 Want to learn more?
+   npm run preview
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Project structure (important parts)
+- src/pages/ - Route files. Blog routes live under src/pages/blog/.
+- src/content/blog/ - Local Markdown/MDX posts (Astro Content Collections).
+- src/layouts/ - Layouts such as BlogPost.astro used to render posts.
+- src/lib/strapi.ts - Helper to fetch data from Strapi. Set STRAPI_URL to enable.
 
-## Credit
+## How blog routing works
+- The index at /blog lists collection entries from src/content/blog and links to /blog/{slug}/.
+- The dynamic page src/pages/blog/[slug].astro attempts to use Astro.props.post (set by getStaticPaths when pre-rendering). If Astro.props.post is undefined (for example, when visiting a statically generated route that wasn't provided), the page will try to fetch the post from Strapi by slug. If slug looks like a numeric ID, it will also try to fetch by ID.
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+## Adding posts
+- Local posts: add a Markdown/MDX file to src/content/blog/ with frontmatter (title, pubDate, etc.) and a filename/slug.
+- Strapi posts: create posts in your Strapi instance and ensure the slug field is set. The site will fetch posts from STRAPI_URL/api/posts.
+
+## Environment & deployment notes
+- STRAPI_URL should point to the Strapi instance root (no trailing slash), e.g. https://cms.example.com
+- If you need client-exposed variables, prefix them with PUBLIC_ (Astro/Vite behavior). STRAPI_URL here is consumed server-side.
+
+## Troubleshooting
+- If a post shows "Post not found", verify the slug exists in local content or Strapi and that STRAPI_URL is correct.
+- For image issues, ensure media are returned in Strapi via populate=media and SERVER_URL is set.
+
+If you'd like, I can also: update the index layout to show fallback previews for Strapi posts, add a .env.example, or wire up CI/CD deployment steps.
