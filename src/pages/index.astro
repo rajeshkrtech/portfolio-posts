@@ -7,7 +7,6 @@ import Header from '../components/Header.astro';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import { Image } from 'astro:assets';
-import { Debug } from 'astro/components';
 
 const posts = await request<Article[]>({
   endpoint: 'posts?populate=media',
@@ -51,7 +50,7 @@ const posts = await request<Article[]>({
 				font-size: 2.369rem;
 			}
 			ul li img {
-				margin-bottom: 0.5rem;
+				margin-bottom: 1.5rem;
 				border-radius: 12px;
 			}
 			ul li a {
@@ -102,7 +101,7 @@ const posts = await request<Article[]>({
 									{post.attributes.media && post.attributes.media.data && (
 										<Image width={720} height={360} src={SERVER_URL + post.attributes.media.data.attributes.url} alt={post.attributes.media.data.attributes.alternativeText} />
 									)}
-									<h4 class="title">{post.attributes.title}</h4>
+									<h4 class="title" >{post.attributes.title}</h4>
 									<p class="date">
 										<FormattedDate date={ post.attributes.publishedAt} />
 									</p>
